@@ -7,10 +7,10 @@ float diff = 0;//density diffusion
 float visc = 0.00001;//speed diffusion
 int iter = 20;//diffusion sampling
 //Brush config
-float B_dense = 50;
-float B_dense_size = 500;
-float B_velocity = 0.1;
-float B_velocity_size = 300;
+float B_dense = 100;
+float B_dense_size = 300;
+float B_velocity = 1;
+float B_velocity_size = 30;
 
 
 float t = 0;
@@ -22,19 +22,12 @@ float[] Vx = new float[size];
 float[] Vy = new float[size];
 float[] Vx0 = new float[size];
 float[] Vy0 = new float[size];
-boolean[] isWall = new boolean[size];
+
 
 
 public void setup(){
   fullScreen();
   colorMode(HSB, 360, 100, 100, 100);
-  for(int i = 0; i <= Nx; i++){
-    for(int j=0; j <= Ny; j++){
-      if(i*cell_size > width/2-100 && i*cell_size < width/2+100 && j*cell_size > height/2-100 && j*cell_size < height/2+100){
-        isWall[IX(i, j)] = true;
-      }
-    }
-  }
 }
 
 void draw(){
@@ -50,11 +43,7 @@ void draw(){
         Vx[IX(i, j)] += constrain(1-dist(mouseX, mouseY, cx, cy)/B_velocity_size, 0, 1)*cos(angle)*B_velocity;
         Vy[IX(i, j)] += constrain(1-dist(mouseX, mouseY, cx, cy)/B_velocity_size, 0, 1)*sin(angle)*B_velocity;
       }
-      if(isWall[IX(i, j)]){
-        fill(360);
-      }else{
       fill((dens[IX(i, j)]/10)%360, 100, dens[IX(i, j)]/5);
-      }
       rect(cx, cy, width/Nx, -height/Ny);
     }
   }

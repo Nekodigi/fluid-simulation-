@@ -69,36 +69,28 @@ void set_bnd(int b, float[] x) {
     x[IX(0, j)] = b == 1 ? -x[IX(1, j)] : x[IX(1, j)];
     x[IX(Nx-1, j)] = b == 1 ? -x[IX(Nx-2, j)] : x[IX(Nx-2, j)];
   }
-  
-  for(int i = 1; i < Nx; i++){
-    for(int j = 1; j < Ny; j++){
-      if(!isWall[IX(i, j)]){
-        int sampC = 0;
-        if(isWall[IX(i-1, j)]){
-          x[IX(i-1, j)] = b == 1 ? -x[IX(i, j)] : x[IX(i, j)];
-          sampC++;
-        }
-        if(isWall[IX(i+1, j)]){
-          x[IX(i+1, j)] = b == 1 ? -x[IX(i, j)] : x[IX(i, j)];
-          sampC++;
-        }
-        if(isWall[IX(i, j-1)]){
-          x[IX(i, j-1)] = b == 2 ? -x[IX(i, j)] : x[IX(i, j)];
-          sampC++;
-        }
-        if(isWall[IX(i, j+1)]){
-          x[IX(i, j+1)] = b == 2 ? -x[IX(i, j)] : x[IX(i, j)];
-          sampC++;
-        }
-        if(sampC != 0){
-          x[IX(i, j)] /= sampC;
-        }
-      }
-    }
-  }
 
   x[IX(0, 0)] = 0.5f * (x[IX(1, 0)] + x[IX(0, 1)]);
   x[IX(0, Ny-1)] = 0.5f * (x[IX(1, Ny-1)] + x[IX(0, Ny-2)]);
   x[IX(Nx-1, 0)] = 0.5f * (x[IX(Nx-2, 0)] + x[IX(Nx-1, 1)]);
   x[IX(Nx-1, Ny-1)] = 0.5f * (x[IX(Nx-2, Ny-1)] + x[IX(Nx-1, Ny-2)]);
+  set_box_bnd(b, x);
+}
+
+void set_box_bnd(int b, float[] x){
+  int l = Nx/2-5, r = Nx/2+5;
+  int d = Ny/2-5, u = Ny/2+5;
+  for (int i = l+1; i < r; i++) {
+    x[IX(i, d  )] = b == 2 ? -x[IX(i, d-1  )] : x[IX(i, d-1 )];
+    x[IX(i, u-1)] = b == 2 ? -x[IX(i, u)] : x[IX(i, u)];
+  }
+  for (int j = d+1; j < u; j++) {
+    x[IX(l, j)] = b == 1 ? -x[IX(l-1, j)] : x[IX(l-1, j)];
+    x[IX(r-1, j)] = b == 1 ? -x[IX(r, j)] : x[IX(r, j)];
+  }
+  for (int i = l+1; i < r; i++) {
+    for (int j = d+1; j < u; j++) {
+      x[IX(i, j)] = 0;
+    }
+  }
 }
